@@ -1,0 +1,21 @@
+dependencies:
+  pre:
+    - if ! chef -v; then
+        if ! [ -f chefdk_0.6.2-1_amd64.deb ]; then
+          wget https://opscode-omnibus-packages.s3.amazonaws.com/ubuntu/12.04/x86_64/chefdk_0.6.2-1_amd64.deb;
+        fi;
+        sudo dpkg -i chefdk_0.6.2-1_amd64.deb;
+      fi
+    - mkdir ~/.chef
+    - curl -o ~/.chef/knife.rb 
+  cache_directories:
+    - ./chefdk_0.6.2-1_amd64.deb
+deployment:
+  production:
+    branch: release
+    commands:
+      - knife ssh "chef_environment:production $KNIFE_SEARCH" $KNIFE_COMMAND -a ipaddress -x $KNIFE_USER
+  staging:
+    branch: master
+    commands:
+      - knife ssh "chef_environment:staging $KNIFE_SEARCH" $KNIFE_COMMAND -a ipaddress -x $KNIFE_USER
